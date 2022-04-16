@@ -6,6 +6,11 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import android.R
+
+import android.content.res.TypedArray
+import android.util.Log
+
 
 class DialView: View {
 
@@ -28,17 +33,23 @@ class DialView: View {
     private val mTempLabel = StringBuffer(8)
     private val mTempResult = FloatArray(2)
 
+    // Set default fan on and fan off colors
+    var mFanOnColor = Color.CYAN;
+    var mFanOffColor = Color.GRAY;
+    lateinit var attrs: AttributeSet
 
     constructor(context: Context) : super(context) {
         init()
     }
 
     constructor(context:Context, attrs: AttributeSet): super(context , attrs){
+        this.attrs = attrs
         init()
     }
 
     constructor(context:Context, attrs:AttributeSet, defStyleAttr:Int):
             super(context , attrs , defStyleAttr){
+        this.attrs = attrs
         init()
     }
 
@@ -53,23 +64,46 @@ class DialView: View {
         mTextPaint!!.setTextSize(40f)
 
         mDialPaint =  Paint(Paint.ANTI_ALIAS_FLAG)
-        mDialPaint!!.setColor(Color.GRAY)
+        mDialPaint!!.setColor(mFanOffColor)
         // Initialize current selection.
         mActiveSelection = 0
+
+        // Get the custom attributes (fanOnColor and fanOffColor) if available.
+//
+//        if(attrs != null){
+//
+//
+//            var typedArray = context.obtainStyledAttributes(attrs,R.s)
+//
+//            // Set the fan on and fan off colors from the attribute values.
+//            // Set the fan on and fan off colors from the attribute values.
+//            mFanOnColor = typedArray.getColor(
+//                R.styleable.DialView_fanOnColor,
+//                mFanOnColor
+//            )
+//            mFanOffColor = typedArray.getColor(
+//                R.styleable.DialView_fanOffColor,
+//                mFanOffColor
+//            )
+//            typedArray.recycle()
+//
+//        }
+
         // TODO: Set up onClick listener for this view.
         setOnClickListener { // Rotate selection to the next valid choice.
             mActiveSelection = (mActiveSelection + 1) % SELECTION_COUNT
+            Log.d("ManActivity"," selection $mActiveSelection")
+
             // Set dial background color to green if selection is >= 1.
             if (mActiveSelection >= 1) {
-                mDialPaint!!.color = Color.GREEN
+                mDialPaint!!.color = mFanOnColor
             } else {
-                mDialPaint!!.color = Color.GRAY
+                mDialPaint!!.color = mFanOffColor
             }
             // Redraw the view.
             invalidate()
         }
     }
-
 
 //    The onSizeChanged() method is called when the layout is
 //    inflated and when the view has changed.
